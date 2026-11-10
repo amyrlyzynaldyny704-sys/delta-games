@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DELTA GAMES</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 25px;
+  background: #10101b;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+h1 { color: #a78bfa; }
+.card {
+  background: #202033;
+  border-radius: 18px;
+  padding: 22px;
+  margin: 20px 0;
+}
+button {
+  background: #8055ed;
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  padding: 15px 25px;
+  font-size: 17px;
+  margin: 8px;
+}
+#result { font-size: 55px; }
+</style>
+</head>
+<body>
+<h1>🎮 DELTA GAMES</h1>
+<p>PLAY • HAVE FUN • EARN POINTS</p>
+
+<div class="card">
+  <h2>My Virtual Points</h2>
+  <h2 id="score">0 ⭐</h2>
+</div>
+
+<div class="card">
+  <h2>🎲 Dice Game</h2>
+  <div id="result">🎲</div>
+  <button onclick="rollDice()">ROLL DICE</button>
+  <p id="message">Press to play!</p>
+</div>
+
+<div class="card">
+  <h2>✊ Rock Paper Scissors</h2>
+  <button onclick="play('Rock')">Rock</button>
+  <button onclick="play('Paper')">Paper</button>
+  <button onclick="play('Scissors')">Scissors</button>
+  <p id="rpsResult">Choose your move!</p>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+tg?.ready();
+tg?.expand();
+
+let score = Number(localStorage.getItem("deltaScore") || 0);
+
+function updateScore() {
+  document.getElementById("score").textContent = score + " ⭐";
+  localStorage.setItem("deltaScore", score);
+}
+
+function rollDice() {
+  const n = Math.floor(Math.random() * 6) + 1;
+  document.getElementById("result").textContent =
+    ["⚀","⚁","⚂","⚃","⚄","⚅"][n - 1];
+  score += n;
+  updateScore();
+  document.getElementById("message").textContent =
+    "You earned " + n + " virtual points!";
+}
+
+function play(user) {
+  const choices = ["Rock", "Paper", "Scissors"];
+  const bot = choices[Math.floor(Math.random() * 3)];
+  let result = "It's a draw!";
+
+  if (
+    (user === "Rock" && bot === "Scissors") ||
+    (user === "Paper" && bot === "Rock") ||
+    (user === "Scissors" && bot === "Paper")
+  ) {
+    result = "You win! +3 points";
+    score += 3;
+    updateScore();
+  } else if (user !== bot) {
+    result = "You lose this round!";
+  }
+
+  document.getElementById("rpsResult").textContent =
+    "You: " + user + " | Bot: " + bot + " — " + result;
+}
+
+updateScore();
+</script>
+</body>
+</html>
